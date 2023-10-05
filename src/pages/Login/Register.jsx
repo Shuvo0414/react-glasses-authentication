@@ -1,7 +1,44 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SocialLogin from "./SocialLogin";
+import useAuth from "../../hooks/useAuth";
+import toast from "react-hot-toast";
 
 const Register = () => {
+  const { creatUser, userUpdateProfile } = useAuth();
+  const navigate = useNavigate();
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+
+    //get input field value
+
+    const form = new FormData(e.currentTarget);
+    const name = form.get("name");
+    const email = form.get("email");
+    const photo = form.get("photo");
+    const password = form.get("password");
+    console.log(name, email, photo, password);
+
+    // password validation
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 character's");
+      return;
+    }
+
+    // creat a user
+    creatUser(email, password)
+      .then(() => {
+        userUpdateProfile(name, photo).then(() => {
+          toast.success("User created successfully");
+          navigate("/");
+        });
+      })
+      .catch(() => {
+        toast.error("Invailed User");
+      });
+  };
+
   return (
     <>
       <div className="hero min-h-screen bg-base-200">
@@ -15,13 +52,15 @@ const Register = () => {
             </p>
           </div>
           <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-            <div className="card-body">
+            <form onSubmit={handleRegister} className="card-body">
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Full Name</span>
                 </label>
                 <input
                   type="text"
+                  name="name"
+                  required
                   placeholder="Full name"
                   className="input input-bordered"
                 />
@@ -31,8 +70,10 @@ const Register = () => {
                   <span className="label-text">Email</span>
                 </label>
                 <input
-                  type="text"
+                  type="email"
                   placeholder="email"
+                  name="email"
+                  required
                   className="input input-bordered"
                 />
               </div>
@@ -43,6 +84,7 @@ const Register = () => {
                 <input
                   type="text"
                   placeholder="image url"
+                  name="photo"
                   className="input input-bordered"
                 />
               </div>
@@ -51,8 +93,10 @@ const Register = () => {
                   <span className="label-text">Password</span>
                 </label>
                 <input
-                  type="text"
+                  type="password"
                   placeholder="password"
+                  name="password"
+                  required
                   className="input input-bordered"
                 />
               </div>
@@ -66,7 +110,7 @@ const Register = () => {
                 </Link>
               </label>
               <SocialLogin></SocialLogin>
-            </div>
+            </form>
           </div>
         </div>
       </div>

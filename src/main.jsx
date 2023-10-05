@@ -11,6 +11,8 @@ import About from "./pages/About/About";
 import Login from "./pages/Login/Login";
 import NotFound from "./pages/ErrorPage/NotFound";
 import Register from "./pages/Login/Register";
+import AuthProvider from "./Provider/AuthProvider";
+import PrivateRoute from "./PrivateRoute/PrivateRoute";
 const url =
   "https://my-json-server.typicode.com/faarhaan10/react-sunglasses/sunglasses";
 
@@ -32,7 +34,11 @@ const router = createBrowserRouter([
       },
       {
         path: "product/:id",
-        element: <ProductDetail></ProductDetail>,
+        element: (
+          <PrivateRoute>
+            <ProductDetail></ProductDetail>
+          </PrivateRoute>
+        ),
         loader: async ({ params }) => fetch(`${url}/${params.id}`),
       },
       {
@@ -53,6 +59,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 );

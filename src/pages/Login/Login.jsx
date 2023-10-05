@@ -1,7 +1,30 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SocialLogin from "./SocialLogin";
+import useAuth from "../../hooks/useAuth";
+import toast from "react-hot-toast";
 
 const Login = () => {
+  const { singIn } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogIn = (e) => {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const email = form.get("email");
+    const password = form.get("password");
+    // console.log(email, password);
+
+    singIn(email, password)
+      .then(() => {
+        toast.success("User login successfully");
+        navigate(location?.state ? location.state : "/");
+      })
+      .catch(() => {
+        toast.error("Invailed User");
+      });
+  };
+
   return (
     <>
       <div className="hero min-h-screen bg-base-200">
@@ -15,14 +38,16 @@ const Login = () => {
             </p>
           </div>
           <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-            <div className="card-body">
+            <form onSubmit={handleLogIn} className="card-body">
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Email</span>
                 </label>
                 <input
-                  type="text"
+                  type="email"
                   placeholder="email"
+                  name="email"
+                  required
                   className="input input-bordered"
                 />
               </div>
@@ -33,6 +58,8 @@ const Login = () => {
                 <input
                   type="text"
                   placeholder="password"
+                  name="password"
+                  required
                   className="input input-bordered"
                 />
                 <label className="label">
@@ -51,7 +78,7 @@ const Login = () => {
                 </Link>
               </label>
               <SocialLogin />
-            </div>
+            </form>
           </div>
         </div>
       </div>
